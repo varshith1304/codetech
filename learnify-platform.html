@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Learnify — Online Learning Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface2: #ede9e0;
+  --ink: #1a1a2e;
+  --ink2: #4a4a6a;
+  --ink3: #8888a8;
+  --primary: #ff6b35;
+  --primary-light: #fff0eb;
+  --secondary: #2d6a4f;
+  --secondary-light: #e8f5f0;
+  --accent: #f7c59f;
+  --yellow: #ffd166;
+  --blue: #118ab2;
+  --blue-light: #e8f4f8;
+  --border: #e2ddd4;
+  --shadow: 0 2px 20px rgba(26,26,46,0.08);
+  --shadow-lg: 0 8px 40px rgba(26,26,46,0.14);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* LAYOUT */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+.main-layout { display: flex; flex: 1; }
+.sidebar {
+  width: 260px; min-height: 100vh;
+  background: var(--ink);
+  padding: 0 0 2rem;
+  position: sticky; top: 0;
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+  transition: width 0.3s;
+}
+.content-area { flex: 1; overflow-y: auto; max-height: 100vh; }
+
+/* AUTH PAGE */
+.auth-page {
+  min-height: 100vh; display: flex;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+.auth-left {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 3rem;
+  position: relative; overflow: hidden;
+}
+.auth-bg-pattern {
+  position: absolute; inset: 0; opacity: 0.06;
+  background-image: radial-gradient(circle, #ff6b35 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.auth-hero-text { position: relative; z-index: 1; text-align: center; }
+.auth-logo-big {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 3.5rem; font-weight: 700;
+  color: #fff; letter-spacing: -0.02em; margin-bottom: 0.5rem;
+}
+.auth-logo-big span { color: var(--primary); }
+.auth-tagline { color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: 300; margin-bottom: 3rem; }
+.auth-features { display: flex; flex-direction: column; gap: 1.2rem; }
+.auth-feat {
+  display: flex; align-items: center; gap: 1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1rem 1.5rem; border-radius: var(--radius);
+  text-align: left; backdrop-filter: blur(8px);
+}
+.auth-feat-icon { font-size: 1.8rem; }
+.auth-feat-title { color: #fff; font-weight: 600; font-size: 0.95rem; }
+.auth-feat-sub { color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 2px; }
+.auth-right {
+  width: 480px; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 3rem;
+}
+.auth-card { width: 100%; max-width: 400px; }
+.auth-card-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 2rem; font-weight: 700; color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+.auth-card-sub { color: var(--ink3); font-size: 0.9rem; margin-bottom: 2rem; }
+.auth-tabs { display: flex; gap: 0; margin-bottom: 2rem; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.auth-tab {
+  flex: 1; padding: 0.7rem; text-align: center;
+  background: transparent; border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+  color: var(--ink3); transition: all 0.25s;
+}
+.auth-tab.active { background: var(--ink); color: #fff; }
+.form-group { margin-bottom: 1.2rem; }
+.form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ink2); margin-bottom: 0.45rem; letter-spacing: 0.02em; }
+.form-input {
+  width: 100%; padding: 0.85rem 1rem;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem; color: var(--ink);
+  transition: border-color 0.25s, box-shadow 0.25s; outline: none;
+}
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,53,0.12); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.85rem 1.5rem; border: none; border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; transition: all 0.25s; text-decoration: none;
+}
+.btn-primary { background: var(--primary); color: #fff; width: 100%; }
+.btn-primary:hover { background: #e55a25; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,107,53,0.35); }
+.btn-ghost { background: transparent; color: var(--ink2); border: 1.5px solid var(--border); }
+.btn-ghost:hover { border-color: var(--ink2); color: var(--ink); }
+.btn-sm { padding: 0.55rem 1.1rem; font-size: 0.82rem; }
+.btn-icon { padding: 0.6rem; border-radius: 8px; }
+.auth-divider { display: flex; align-items: center; gap: 0.8rem; margin: 1.2rem 0; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.auth-divider span { font-size: 0.75rem; color: var(--ink3); }
+.auth-google {
+  width: 100%; padding: 0.85rem; border: 1.5px solid var(--border);
+  background: var(--surface); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; transition: all 0.25s; color: var(--ink);
+}
+.auth-google:hover { border-color: var(--ink2); box-shadow: var(--shadow); }
+.error-msg { color: #e53e3e; font-size: 0.8rem; margin-top: 0.4rem; }
+.success-banner {
+  background: var(--secondary-light); border: 1px solid var(--secondary);
+  border-radius: var(--radius-sm); padding: 0.8rem 1rem;
+  color: var(--secondary); font-size: 0.85rem; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* SIDEBAR */
+.sidebar-logo {
+  padding: 1.5rem 1.5rem 1rem;
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.5rem; font-weight: 700; color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 0.5rem;
+}
+.sidebar-logo span { color: var(--primary); }
+.sidebar-user {
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.user-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--yellow));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9rem; color: #fff; flex-shrink: 0;
+}
+.user-name { color: #fff; font-weight: 600; font-size: 0.9rem; }
+.user-role { color: rgba(255,255,255,0.4); font-size: 0.72rem; }
+.sidebar-section { padding: 0.5rem 1rem; margin-bottom: 0.25rem; }
+.sidebar-section-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 0 0.5rem; margin-bottom: 0.4rem; }
+.sidebar-link {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+  color: rgba(255,255,255,0.55); font-size: 0.88rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; border: none; background: none;
+  width: 100%; text-align: left;
+}
+.sidebar-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.sidebar-link.active { background: rgba(255,107,53,0.18); color: var(--primary); }
+.sidebar-link .icon { font-size: 1.1rem; width: 24px; text-align: center; }
+.sidebar-badge {
+  margin-left: auto; background: var(--primary); color: #fff;
+  font-size: 0.65rem; font-weight: 700; padding: 1px 7px;
+  border-radius: 20px; min-width: 20px; text-align: center;
+}
+.sidebar-progress { padding: 1rem 1.5rem; margin-top: auto; }
+.sidebar-progress-label { color: rgba(255,255,255,0.4); font-size: 0.72rem; margin-bottom: 0.6rem; }
+.sidebar-progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+.sidebar-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--yellow)); border-radius: 2px; transition: width 1s ease; }
+.sidebar-logout {
+  margin: 0.5rem 1rem 0;
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+  color: rgba(255,255,255,0.35); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s; border: none; background: none;
+  width: calc(100% - 2rem);
+}
+.sidebar-logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+
+/* TOP NAV */
+.topnav {
+  padding: 1rem 2rem; background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 1rem;
+  position: sticky; top: 0; z-index: 50;
+}
+.topnav-search {
+  flex: 1; max-width: 420px;
+  display: flex; align-items: center; gap: 0.6rem;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 50px; padding: 0.6rem 1rem;
+}
+.topnav-search input {
+  border: none; background: none; outline: none;
+  font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+  color: var(--ink); flex: 1;
+}
+.topnav-search .search-icon { color: var(--ink3); font-size: 0.9rem; }
+.topnav-actions { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+.notif-btn {
+  position: relative; width: 38px; height: 38px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; transition: all 0.2s;
+}
+.notif-btn:hover { border-color: var(--primary); }
+.notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 8px; height: 8px; background: var(--primary); border-radius: 50%;
+  border: 1.5px solid var(--surface);
+}
+.streak-pill {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: #fff8e8; border: 1px solid var(--yellow);
+  padding: 0.4rem 0.9rem; border-radius: 50px;
+  font-size: 0.8rem; font-weight: 600; color: #b45309;
+}
+
+/* PAGE CONTENT */
+.page { padding: 2rem; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* DASHBOARD */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--ink) 0%, #2d2d5e 100%);
+  border-radius: var(--radius); padding: 2rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 2rem; position: relative; overflow: hidden;
+}
+.welcome-banner::before {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,107,53,0.15);
+}
+.welcome-banner::after {
+  content: ''; position: absolute; right: 60px; bottom: -60px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: rgba(247,197,159,0.1);
+}
+.welcome-title { font-family: 'Clash Display', sans-serif; font-size: 1.6rem; color: #fff; font-weight: 600; }
+.welcome-sub { color: rgba(255,255,255,0.55); font-size: 0.9rem; margin-top: 0.3rem; }
+.welcome-cta { position: relative; z-index: 1; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 2rem; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.stat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.stat-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+}
+.stat-icon.orange { background: var(--primary-light); }
+.stat-icon.green { background: var(--secondary-light); }
+.stat-icon.blue { background: var(--blue-light); }
+.stat-icon.yellow { background: #fff8e8; }
+.stat-value { font-family: 'Clash Display', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); line-height: 1; }
+.stat-label { font-size: 0.78rem; color: var(--ink3); margin-top: 2px; }
+.stat-delta { font-size: 0.72rem; color: var(--secondary); font-weight: 600; margin-top: 3px; }
+
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+.section-title-sm { font-family: 'Clash Display', sans-serif; font-size: 1.2rem; font-weight: 600; color: var(--ink); }
+.see-all { font-size: 0.82rem; color: var(--primary); font-weight: 600; cursor: pointer; border: none; background: none; }
+.see-all:hover { text-decoration: underline; }
+
+/* CONTINUE LEARNING */
+.continue-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.2rem 1.5rem;
+  display: flex; align-items: center; gap: 1.2rem;
+  margin-bottom: 1rem; transition: box-shadow 0.25s;
+  cursor: pointer;
+}
+.continue-card:hover { box-shadow: var(--shadow-lg); }
+.continue-thumb {
+  width: 80px; height: 56px; border-radius: 8px;
+  object-fit: cover; flex-shrink: 0;
+  font-size: 2rem; display: flex; align-items: center; justify-content: center;
+}
+.continue-title { font-weight: 600; font-size: 0.95rem; color: var(--ink); margin-bottom: 0.2rem; }
+.continue-sub { font-size: 0.78rem; color: var(--ink3); margin-bottom: 0.6rem; }
+.progress-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; flex: 1; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--yellow)); border-radius: 2px; }
+.progress-row { display: flex; align-items: center; gap: 0.75rem; }
+.progress-pct { font-size: 0.72rem; font-weight: 700; color: var(--primary); white-space: nowrap; }
+.continue-action { margin-left: auto; flex-shrink: 0; }
+
+/* COURSES */
+.courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.course-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: box-shadow 0.3s, transform 0.3s; cursor: pointer;
+}
+.course-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.course-thumb {
+  height: 160px; display: flex; align-items: center; justify-content: center;
+  font-size: 4rem; position: relative;
+}
+.course-badge {
+  position: absolute; top: 12px; left: 12px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+  padding: 0.25rem 0.65rem; border-radius: 20px; text-transform: uppercase;
+}
+.badge-new { background: var(--primary); color: #fff; }
+.badge-hot { background: var(--yellow); color: var(--ink); }
+.badge-free { background: var(--secondary); color: #fff; }
+.course-body { padding: 1.2rem; }
+.course-cat { font-size: 0.72rem; font-weight: 600; color: var(--primary); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.4rem; }
+.course-title { font-family: 'Clash Display', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 0.5rem; }
+.course-meta { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--ink3); margin-bottom: 0.8rem; flex-wrap: wrap; }
+.course-meta .dot { width: 3px; height: 3px; background: var(--border); border-radius: 50%; }
+.stars { color: var(--yellow); font-size: 0.72rem; }
+.course-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 0.8rem; border-top: 1px solid var(--border); }
+.course-price { font-family: 'Clash Display', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+.course-price.free { color: var(--secondary); }
+.enroll-btn { font-size: 0.78rem; }
+
+/* FILTER TABS */
+.filter-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.filter-tab {
+  padding: 0.5rem 1.1rem; border-radius: 50px;
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--surface); color: var(--ink2);
+  transition: all 0.2s;
+}
+.filter-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.filter-tab:hover:not(.active) { border-color: var(--ink2); color: var(--ink); }
+
+/* VIDEO PLAYER PAGE */
+.video-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; padding: 1.5rem; min-height: calc(100vh - 65px); }
+.video-main {}
+.video-wrapper {
+  background: #000; border-radius: var(--radius); overflow: hidden;
+  aspect-ratio: 16/9; position: relative; margin-bottom: 1.2rem;
+}
+.video-player { width: 100%; height: 100%; background: #000; position: relative; }
+.video-bg {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0a0a1a, #1a1a3e);
+}
+.video-play-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(255,107,53,0.9); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1.8rem; color: #fff;
+  transition: all 0.25s; margin-bottom: 1.5rem;
+}
+.video-play-btn:hover { background: var(--primary); transform: scale(1.08); box-shadow: 0 0 30px rgba(255,107,53,0.5); }
+.video-title-overlay { color: rgba(255,255,255,0.7); font-size: 0.9rem; }
+.video-controls {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  padding: 2rem 1.2rem 1rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.video-progress { display: flex; align-items: center; gap: 0.75rem; }
+.video-seekbar {
+  flex: 1; height: 4px; background: rgba(255,255,255,0.25);
+  border-radius: 2px; cursor: pointer; position: relative;
+}
+.video-seekbar-fill { height: 100%; background: var(--primary); border-radius: 2px; }
+.video-time { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.7); white-space: nowrap; }
+.video-btns { display: flex; align-items: center; gap: 0.75rem; }
+.vbtn { background: none; border: none; color: rgba(255,255,255,0.8); font-size: 1rem; cursor: pointer; transition: color 0.2s; padding: 0.2rem; }
+.vbtn:hover { color: #fff; }
+.vbtn-vol { display: flex; align-items: center; gap: 0.4rem; }
+.vbtn-vol input[type=range] { width: 70px; accent-color: var(--primary); }
+.vbtn-speed {
+  font-family: 'DM Mono', monospace; font-size: 0.72rem;
+  background: rgba(255,255,255,0.15); color: #fff; border: none;
+  padding: 0.2rem 0.4rem; border-radius: 4px; cursor: pointer;
+}
+.vbtn-quality { font-size: 0.72rem; color: rgba(255,255,255,0.7); margin-left: auto; }
+.video-info-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+.video-course-title { font-family: 'Clash Display', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; }
+.video-lesson-title { font-size: 1rem; color: var(--ink2); margin-bottom: 1rem; }
+.instructor-row { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 0; border-top: 1px solid var(--border); }
+.instr-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), #06d6a0); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #fff; font-weight: 700; }
+.instr-name { font-weight: 600; font-size: 0.9rem; color: var(--ink); }
+.instr-title { font-size: 0.75rem; color: var(--ink3); }
+.video-tags { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+.vtag { padding: 0.3rem 0.75rem; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; font-size: 0.72rem; color: var(--ink2); }
+/* Sidebar playlist */
+.playlist-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; height: fit-content; }
+.playlist-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); }
+.playlist-title { font-family: 'Clash Display', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink); }
+.playlist-meta { font-size: 0.78rem; color: var(--ink3); margin-top: 0.2rem; }
+.playlist-progress-row { margin-top: 0.8rem; display: flex; align-items: center; gap: 0.75rem; }
+.playlist-items { max-height: 520px; overflow-y: auto; }
+.playlist-item {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.9rem 1.2rem; cursor: pointer;
+  transition: background 0.2s; border-bottom: 1px solid var(--border);
+}
+.playlist-item:hover { background: var(--bg); }
+.playlist-item.active { background: var(--primary-light); border-left: 3px solid var(--primary); }
+.playlist-item.completed .pnum { color: var(--secondary); }
+.pnum { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--ink3); min-width: 22px; text-align: center; }
+.pcheck { color: var(--secondary); font-size: 0.85rem; }
+.pinfo { flex: 1; }
+.ptitle { font-size: 0.85rem; font-weight: 500; color: var(--ink); line-height: 1.3; }
+.pdur { font-size: 0.72rem; color: var(--ink3); margin-top: 2px; display: flex; align-items: center; gap: 0.4rem; }
+.ptype { font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; }
+.ptype.video { background: var(--blue-light); color: var(--blue); }
+.ptype.quiz { background: #fff8e8; color: #b45309; }
+.ptype.article { background: var(--secondary-light); color: var(--secondary); }
+
+/* PROFILE */
+.profile-grid { display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; }
+.profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; }
+.profile-avatar-big {
+  width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 1rem;
+  background: linear-gradient(135deg, var(--primary), var(--yellow));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; color: #fff; font-weight: 700;
+}
+.profile-name { font-family: 'Clash Display', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--ink); }
+.profile-email { font-size: 0.82rem; color: var(--ink3); margin-top: 0.2rem; }
+.profile-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--primary-light); color: var(--primary); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-top: 0.8rem; }
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1.5rem; }
+.profile-stat { background: var(--bg); border-radius: var(--radius-sm); padding: 1rem; text-align: center; }
+.profile-stat-val { font-family: 'Clash Display', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--ink); }
+.profile-stat-lab { font-size: 0.72rem; color: var(--ink3); }
+.profile-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.2rem; }
+.profile-section-title { font-family: 'Clash Display', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+.cert-card { display: flex; align-items: center; gap: 1rem; padding: 0.9rem; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 0.75rem; }
+.cert-icon { font-size: 2rem; }
+.cert-name { font-weight: 600; font-size: 0.9rem; color: var(--ink); }
+.cert-date { font-size: 0.75rem; color: var(--ink3); }
+.cert-dl { margin-left: auto; }
+.activity-row { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.9rem; }
+.activity-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 4px; }
+.activity-text { font-size: 0.85rem; color: var(--ink2); line-height: 1.4; }
+.activity-time { font-size: 0.72rem; color: var(--ink3); margin-top: 2px; }
+.edit-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+  background: var(--ink); color: #fff; padding: 0.85rem 1.5rem;
+  border-radius: var(--radius-sm); font-size: 0.88rem;
+  display: flex; align-items: center; gap: 0.6rem;
+  box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .courses-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .video-layout { grid-template-columns: 1fr; }
+  .playlist-sidebar { order: -1; }
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .courses-grid { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ──── DATA ────
+const COURSES = [
+  { id:1, emoji:'⚛️', color:'#e8f4ff', title:'Complete React Developer', cat:'Web Dev', instructor:'Sarah Chen', rating:4.9, reviews:2840, lessons:72, hours:'18h', level:'Beginner', price:4999, badge:'hot', enrolled:true, progress:65 },
+  { id:2, emoji:'🐍', color:'#f0fff4', title:'Python for Data Science', cat:'Data Science', instructor:'Alex Kumar', rating:4.8, reviews:3120, lessons:88, hours:'24h', level:'Intermediate', price:5999, badge:'new', enrolled:false, progress:0 },
+  { id:3, emoji:'🎨', color:'#fff8f0', title:'UI/UX Design Mastery', cat:'Design', instructor:'Maria Lopez', rating:4.7, reviews:1560, lessons:54, hours:'14h', level:'Beginner', price:0, badge:'free', enrolled:true, progress:32 },
+  { id:4, emoji:'🔒', color:'#fff0f0', title:'Cybersecurity Fundamentals', cat:'Security', instructor:'James Park', rating:4.8, reviews:980, lessons:60, hours:'16h', level:'Intermediate', price:6499, badge:'', enrolled:false, progress:0 },
+  { id:5, emoji:'☁️', color:'#f0f4ff', title:'AWS Cloud Practitioner', cat:'Cloud', instructor:'Emily Watson', rating:4.9, reviews:4200, lessons:96, hours:'28h', level:'Beginner', price:7999, badge:'hot', enrolled:false, progress:0 },
+  { id:6, emoji:'📱', color:'#f5f0ff', title:'React Native Mobile Dev', cat:'Mobile', instructor:'David Kim', rating:4.6, reviews:1230, lessons:64, hours:'20h', level:'Advanced', price:5499, badge:'new', enrolled:true, progress:12 },
+];
+const LESSONS = [
+  { id:1, title:'Introduction & Setup', dur:'8:24', type:'video', done:true },
+  { id:2, title:'JSX Fundamentals', dur:'12:10', type:'video', done:true },
+  { id:3, title:'Components & Props', dur:'18:45', type:'video', done:true },
+  { id:4, title:'Quiz: React Basics', dur:'5 questions', type:'quiz', done:true },
+  { id:5, title:'State & useState Hook', dur:'22:30', type:'video', done:false, active:true },
+  { id:6, title:'useEffect Deep Dive', dur:'25:15', type:'video', done:false },
+  { id:7, title:'Context API', dur:'19:40', type:'video', done:false },
+  { id:8, title:'Reading: React Patterns', dur:'8 min read', type:'article', done:false },
+  { id:9, title:'React Router v6', dur:'21:00', type:'video', done:false },
+  { id:10,'title':'Final Project', dur:'1:02:00', type:'video', done:false },
+];
+
+// ──── AUTH ────
+function AuthPage({ onLogin }) {
+  const [tab, setTab] = useState('login');
+  const [form, setForm] = useState({ name:'', email:'', password:'', confirm:'' });
+  const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const validate = () => {
+    const e = {};
+    if (!form.email) e.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Invalid email format';
+    if (!form.password) e.password = 'Password is required';
+    else if (form.password.length < 6) e.password = 'Min 6 characters';
+    if (tab === 'signup') {
+      if (!form.name) e.name = 'Name is required';
+      if (form.password !== form.confirm) e.confirm = 'Passwords do not match';
+    }
+    return e;
+  };
+
+  const handleSubmit = () => {
+    const e = validate();
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      if (tab === 'signup') { setSuccess('Account created! Logging you in...'); setTimeout(() => onLogin({ name: form.name || 'Varshith', email: form.email }), 1200); }
+      else onLogin({ name: 'Varshith Reddy', email: form.email });
+    }, 900);
+  };
+
+  const demoLogin = () => { setLoading(true); setTimeout(() => { setLoading(false); onLogin({ name: 'Varshith Reddy', email: 'varshith@demo.com' }); }, 600); };
+
+  return (
+    <div className="auth-page">
+      <div className="auth-left">
+        <div className="auth-bg-pattern"/>
+        <div className="auth-hero-text">
+          <div className="auth-logo-big">Learn<span>ify</span></div>
+          <div className="auth-tagline">Master Skills. Build the Future.</div>
+          <div className="auth-features">
+            <div className="auth-feat"><div className="auth-feat-icon">🎬</div><div><div className="auth-feat-title">HD Video Streaming</div><div className="auth-feat-sub">Watch anywhere, anytime, offline</div></div></div>
+            <div className="auth-feat"><div className="auth-feat-icon">🏆</div><div><div className="auth-feat-title">Verified Certificates</div><div className="auth-feat-sub">Industry-recognized on completion</div></div></div>
+            <div className="auth-feat"><div className="auth-feat-icon">🧠</div><div><div className="auth-feat-title">AI-Powered Learning</div><div className="auth-feat-sub">Personalized paths & smart quizzes</div></div></div>
+            <div className="auth-feat"><div className="auth-feat-icon">👥</div><div><div className="auth-feat-title">Expert Instructors</div><div className="auth-feat-sub">Learn from industry professionals</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div className="auth-right">
+        <div className="auth-card">
+          <div className="auth-card-title">{tab==='login'?'Welcome back 👋':'Create account ✨'}</div>
+          <div className="auth-card-sub">{tab==='login'?'Sign in to continue your learning journey':'Join 50,000+ students learning today'}</div>
+          {success && <div className="success-banner">✅ {success}</div>}
+          <div className="auth-tabs">
+            <button className={`auth-tab ${tab==='login'?'active':''}`} onClick={()=>{setTab('login');setErrors({});}}>Sign In</button>
+            <button className={`auth-tab ${tab==='signup'?'active':''}`} onClick={()=>{setTab('signup');setErrors({});}}>Sign Up</button>
+          </div>
+          {tab==='signup' && (
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
+              <input className="form-input" placeholder="Varshith Reddy" value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/>
+              {errors.name && <div className="error-msg">{errors.name}</div>}
+            </div>
+          )}
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input className="form-input" type="email" placeholder="you@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/>
+            {errors.email && <div className="error-msg">{errors.email}</div>}
+          </div>
+          <div className={tab==='signup'?'form-row':''}>
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input className="form-input" type="password" placeholder="••••••••" value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/>
+              {errors.password && <div className="error-msg">{errors.password}</div>}
+            </div>
+            {tab==='signup' && (
+              <div className="form-group">
+                <label className="form-label">Confirm Password</label>
+                <input className="form-input" type="password" placeholder="••••••••" value={form.confirm} onChange={e=>setForm({...form,confirm:e.target.value})}/>
+                {errors.confirm && <div className="error-msg">{errors.confirm}</div>}
+              </div>
+            )}
+          </div>
+          <button className="btn btn-primary" onClick={handleSubmit} disabled={loading} style={{marginBottom:'1rem'}}>
+            {loading ? '⏳ Please wait...' : (tab==='login'?'Sign In →':'Create Account →')}
+          </button>
+          <div className="auth-divider"><span>or</span></div>
+          <button className="auth-google" onClick={demoLogin}>
+            <span style={{fontSize:'1.2rem'}}>🚀</span> Continue as Demo Student
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ──── SIDEBAR ────
+function Sidebar({ user, page, setPage, onLogout }) {
+  const links = [
+    { id:'dashboard', icon:'🏠', label:'Dashboard' },
+    { id:'courses', icon:'📚', label:'All Courses', badge:'6' },
+    { id:'my-learning', icon:'🎓', label:'My Learning' },
+    { id:'video', icon:'▶️', label:'Continue Watching' },
+    { id:'profile', icon:'👤', label:'Profile' },
+  ];
+  return (
+    <div className="sidebar">
+      <div className="sidebar-logo">Learn<span>ify</span></div>
+      <div className="sidebar-user">
+        <div className="user-avatar">{user.name[0]}</div>
+        <div><div className="user-name">{user.name.split(' ')[0]}</div><div className="user-role">Student · Pro</div></div>
+      </div>
+      <div className="sidebar-section">
+        <div className="sidebar-section-label">Main Menu</div>
+        {links.map(l=>(
+          <button key={l.id} className={`sidebar-link ${page===l.id?'active':''}`} onClick={()=>setPage(l.id)}>
+            <span className="icon">{l.icon}</span>
+            {l.label}
+            {l.badge && <span className="sidebar-badge">{l.badge}</span>}
+          </button>
+        ))}
+      </div>
+      <div className="sidebar-progress">
+        <div className="sidebar-progress-label">⚡ Weekly Goal — 4/7 days</div>
+        <div className="sidebar-progress-bar"><div className="sidebar-progress-fill" style={{width:'57%'}}/></div>
+      </div>
+      <button className="sidebar-logout" onClick={onLogout}>🚪 Sign Out</button>
+    </div>
+  );
+}
+
+// ──── TOPNAV ────
+function TopNav({ user, page }) {
+  const titles = { dashboard:'Dashboard', courses:'Browse Courses', 'my-learning':'My Learning', video:'Video Lesson', profile:'My Profile' };
+  return (
+    <div className="topnav">
+      <div style={{fontFamily:"'Clash Display',sans-serif",fontWeight:600,fontSize:'1.05rem',color:'var(--ink)',minWidth:140}}>{titles[page]||'Learnify'}</div>
+      <div className="topnav-search">
+        <span className="search-icon">🔍</span>
+        <input placeholder="Search courses, topics..."/>
+      </div>
+      <div className="topnav-actions">
+        <div className="streak-pill">🔥 12 day streak</div>
+        <div className="notif-btn">🔔<div className="notif-dot"/></div>
+        <div className="user-avatar" style={{width:36,height:36,fontSize:'0.85rem'}}>{user.name[0]}</div>
+      </div>
+    </div>
+  );
+}
+
+// ──── DASHBOARD ────
+function Dashboard({ user, setPage }) {
+  const enrolled = COURSES.filter(c=>c.enrolled);
+  return (
+    <div className="page">
+      <div className="welcome-banner">
+        <div>
+          <div className="welcome-title">Good morning, {user.name.split(' ')[0]}! 🌟</div>
+          <div className="welcome-sub">You have 3 lessons left to complete this week's goal</div>
+        </div>
+        <div className="welcome-cta">
+          <button className="btn btn-primary" onClick={()=>setPage('video')}>▶ Continue Learning</button>
+        </div>
+      </div>
+      <div className="stats-row">
+        <div className="stat-card"><div className="stat-icon orange">📚</div><div><div className="stat-value">3</div><div className="stat-label">Courses Enrolled</div><div className="stat-delta">↑ 1 this month</div></div></div>
+        <div className="stat-card"><div className="stat-icon green">✅</div><div><div className="stat-value">47</div><div className="stat-label">Lessons Done</div><div className="stat-delta">↑ 12 this week</div></div></div>
+        <div className="stat-card"><div className="stat-icon blue">⏱️</div><div><div className="stat-value">28h</div><div className="stat-label">Time Learned</div><div className="stat-delta">4h this week</div></div></div>
+        <div className="stat-card"><div className="stat-icon yellow">🏆</div><div><div className="stat-value">2</div><div className="stat-label">Certificates</div><div className="stat-delta">1 in progress</div></div></div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 380px',gap:'1.5rem'}}>
+        <div>
+          <div className="section-head"><div className="section-title-sm">Continue Learning</div><button className="see-all btn" onClick={()=>setPage('my-learning')}>See all →</button></div>
+          {enrolled.map(c=>(
+            <div className="continue-card" key={c.id} onClick={()=>setPage('video')}>
+              <div className="continue-thumb" style={{background:c.color}}>{c.emoji}</div>
+              <div style={{flex:1}}>
+                <div className="continue-title">{c.title}</div>
+                <div className="continue-sub">{c.instructor} · Lesson {Math.round(c.progress/100*c.lessons)+1} of {c.lessons}</div>
+                <div className="progress-row">
+                  <div className="progress-bar"><div className="progress-fill" style={{width:c.progress+'%'}}/></div>
+                  <div className="progress-pct">{c.progress}%</div>
+                </div>
+              </div>
+              <div className="continue-action"><button className="btn btn-primary btn-sm">▶</button></div>
+            </div>
+          ))}
+        </div>
+        <div>
+          <div className="section-head"><div className="section-title-sm">Recommended</div><button className="see-all btn" onClick={()=>setPage('courses')}>Browse →</button></div>
+          {COURSES.filter(c=>!c.enrolled).slice(0,3).map(c=>(
+            <div key={c.id} style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--radius-sm)',padding:'1rem',marginBottom:'0.75rem',display:'flex',alignItems:'center',gap:'0.85rem',cursor:'pointer'}} onClick={()=>setPage('courses')}>
+              <div style={{width:44,height:44,borderRadius:8,background:c.color,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.4rem',flexShrink:0}}>{c.emoji}</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:600,fontSize:'0.85rem',color:'var(--ink)',marginBottom:2}}>{c.title}</div>
+                <div style={{fontSize:'0.72rem',color:'var(--ink3)'}}>{c.instructor}</div>
+              </div>
+              <div style={{fontFamily:"'Clash Display',sans-serif",fontWeight:700,color:'var(--primary)',fontSize:'0.95rem',whiteSpace:'nowrap'}}>{c.price===0?'Free':'₹'+c.price}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ──── COURSES ────
+function Courses({ setPage }) {
+  const [filter, setFilter] = useState('All');
+  const cats = ['All','Web Dev','Data Science','Design','Security','Cloud','Mobile'];
+  const filtered = filter==='All' ? COURSES : COURSES.filter(c=>c.cat===filter);
+  const [toast, setToast] = useState('');
+  const showToast = msg => { setToast(msg); setTimeout(()=>setToast(''),2500); };
+
+  return (
+    <div className="page">
+      <div className="filter-tabs">
+        {cats.map(c=><button key={c} className={`filter-tab ${filter===c?'active':''}`} onClick={()=>setFilter(c)}>{c}</button>)}
+      </div>
+      <div className="courses-grid">
+        {filtered.map(c=>(
+          <div className="course-card" key={c.id}>
+            <div className="course-thumb" style={{background:c.color}}>
+              {c.badge && <div className={`course-badge badge-${c.badge}`}>{c.badge==='hot'?'🔥 Hot':c.badge==='new'?'✨ New':'🆓 Free'}</div>}
+              <span style={{fontSize:'4rem'}}>{c.emoji}</span>
+            </div>
+            <div className="course-body">
+              <div className="course-cat">{c.cat}</div>
+              <div className="course-title">{c.title}</div>
+              <div className="course-meta">
+                <span className="stars">★ {c.rating}</span>
+                <span style={{fontSize:'0.75rem',color:'var(--ink3)'}}>({c.reviews.toLocaleString()})</span>
+                <span className="dot"/>
+                <span>{c.lessons} lessons</span>
+                <span className="dot"/>
+                <span>{c.hours}</span>
+                <span className="dot"/>
+                <span>{c.level}</span>
+              </div>
+              <div style={{fontSize:'0.78rem',color:'var(--ink3)',marginBottom:'0.5rem'}}>by {c.instructor}</div>
+              {c.enrolled && (
+                <div className="progress-row" style={{marginBottom:'0.5rem'}}>
+                  <div className="progress-bar"><div className="progress-fill" style={{width:c.progress+'%'}}/></div>
+                  <div className="progress-pct">{c.progress}%</div>
+                </div>
+              )}
+              <div className="course-footer">
+                <div className={`course-price ${c.price===0?'free':''}`}>{c.price===0?'Free':'₹'+c.price.toLocaleString()}</div>
+                {c.enrolled
+                  ? <button className="btn btn-ghost btn-sm enroll-btn" onClick={()=>setPage('video')}>▶ Continue</button>
+                  : <button className="btn btn-primary btn-sm enroll-btn" onClick={()=>showToast('🎉 Enrolled successfully!')}>Enroll Now</button>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+// ──── MY LEARNING ────
+function MyLearning({ setPage }) {
+  const enrolled = COURSES.filter(c=>c.enrolled);
+  return (
+    <div className="page">
+      <div className="filter-tabs">
+        {['In Progress','Completed','Wishlist'].map(t=><button key={t} className={`filter-tab ${t==='In Progress'?'active':''}`}>{t}</button>)}
+      </div>
+      <div className="courses-grid">
+        {enrolled.map(c=>(
+          <div className="course-card" key={c.id} onClick={()=>setPage('video')}>
+            <div className="course-thumb" style={{background:c.color,position:'relative'}}>
+              <span style={{fontSize:'4rem'}}>{c.emoji}</span>
+              <div style={{position:'absolute',bottom:12,left:12,right:12}}>
+                <div className="progress-bar" style={{height:6}}><div className="progress-fill" style={{width:c.progress+'%'}}/></div>
+              </div>
+            </div>
+            <div className="course-body">
+              <div className="course-cat">{c.cat}</div>
+              <div className="course-title">{c.title}</div>
+              <div className="course-meta"><span>{c.instructor}</span><span className="dot"/><span>{c.hours}</span></div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:'0.5rem'}}>
+                <div style={{fontSize:'0.82rem',color:'var(--primary)',fontWeight:700}}>{c.progress}% complete</div>
+                <button className="btn btn-primary btn-sm">▶ Watch</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ──── VIDEO PLAYER ────
+function VideoPlayer() {
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(35);
+  const [activeLesson, setActiveLesson] = useState(5);
+  const [speed, setSpeed] = useState('1x');
+  const speeds = ['0.5x','0.75x','1x','1.25x','1.5x','2x'];
+  const [volume, setVolume] = useState(80);
+
+  useEffect(() => {
+    let t;
+    if (playing) t = setInterval(() => setProgress(p=>p>=100?(clearInterval(t),100):p+0.2), 500);
+    return () => clearInterval(t);
+  }, [playing]);
+
+  const formatTime = pct => {
+    const total = 22*60+30;
+    const cur = Math.floor(pct/100*total);
+    const m = Math.floor(cur/60), s = cur%60;
+    return `${m}:${s.toString().padStart(2,'0')}`;
+  };
+
+  return (
+    <div className="video-layout">
+      <div className="video-main">
+        <div className="video-wrapper">
+          <div className="video-player">
+            <div className="video-bg" onClick={()=>setPlaying(!playing)} style={{cursor:'pointer'}}>
+              {!playing ? (
+                <>
+                  <button className="video-play-btn" onClick={e=>{e.stopPropagation();setPlaying(true);}}>▶</button>
+                  <div className="video-title-overlay">Click to play · State & useState Hook</div>
+                </>
+              ) : (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'1rem'}}>
+                  <div style={{width:60,height:60,borderRadius:'50%',border:'3px solid rgba(255,107,53,0.6)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <div style={{display:'flex',gap:6}}>
+                      <div style={{width:6,height:28,background:'var(--primary)',borderRadius:3,animation:'pulse 0.8s ease-in-out infinite'}}/>
+                      <div style={{width:6,height:28,background:'var(--primary)',borderRadius:3,animation:'pulse 0.8s ease-in-out infinite 0.15s'}}/>
+                    </div>
+                  </div>
+                  <div style={{color:'rgba(255,255,255,0.6)',fontSize:'0.85rem'}}>Playing — State & useState Hook</div>
+                </div>
+              )}
+            </div>
+            <div className="video-controls">
+              <div className="video-progress">
+                <span className="video-time">{formatTime(progress)}</span>
+                <div className="video-seekbar" onClick={e=>{const r=e.currentTarget.getBoundingClientRect();setProgress(Math.min(100,Math.max(0,(e.clientX-r.left)/r.width*100)));}}>
+                  <div className="video-seekbar-fill" style={{width:progress+'%'}}/>
+                </div>
+                <span className="video-time">22:30</span>
+              </div>
+              <div className="video-btns">
+                <button className="vbtn" onClick={()=>setProgress(p=>Math.max(0,p-5))}>⏮</button>
+                <button className="vbtn" style={{fontSize:'1.4rem'}} onClick={()=>setPlaying(!playing)}>{playing?'⏸':'▶'}</button>
+                <button className="vbtn" onClick={()=>setProgress(p=>Math.min(100,p+5))}>⏭</button>
+                <div className="vbtn-vol">
+                  <button className="vbtn">{volume===0?'🔇':volume<50?'🔉':'🔊'}</button>
+                  <input type="range" min="0" max="100" value={volume} onChange={e=>setVolume(+e.target.value)} style={{width:70,accentColor:'var(--primary)'}}/>
+                </div>
+                <button className="vbtn-speed" onClick={()=>setSpeed(speeds[(speeds.indexOf(speed)+1)%speeds.length])}>{speed}</button>
+                <span className="vbtn-quality">HD 1080p</span>
+                <button className="vbtn" style={{marginLeft:'auto'}}>⛶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="video-info-section">
+          <div className="course-cat">Web Dev · React.js</div>
+          <div className="video-course-title">Complete React Developer</div>
+          <div className="video-lesson-title">Lesson 5: State & useState Hook</div>
+          <div style={{display:'flex',gap:'0.75rem',marginBottom:'0.8rem'}}>
+            <button className="btn btn-primary btn-sm">📥 Download</button>
+            <button className="btn btn-ghost btn-sm">📝 Notes</button>
+            <button className="btn btn-ghost btn-sm">🔖 Bookmark</button>
+            <button className="btn btn-ghost btn-sm" style={{marginLeft:'auto'}}>❤️ Like</button>
+          </div>
+          <div className="instructor-row">
+            <div className="instr-avatar">SC</div>
+            <div><div className="instr-name">Sarah Chen</div><div className="instr-title">Senior React Engineer · ex-Google</div></div>
+            <button className="btn btn-ghost btn-sm" style={{marginLeft:'auto'}}>Follow</button>
+          </div>
+          <div className="video-tags">
+            {['React','Hooks','State Management','JavaScript','Frontend'].map(t=><div key={t} className="vtag">{t}</div>)}
+          </div>
+        </div>
+      </div>
+      <div className="playlist-sidebar">
+        <div className="playlist-header">
+          <div className="playlist-title">Course Content</div>
+          <div className="playlist-meta">10 lessons · 18h total</div>
+          <div className="playlist-progress-row">
+            <div className="progress-bar" style={{flex:1}}><div className="progress-fill" style={{width:'40%'}}/></div>
+            <div className="progress-pct">40%</div>
+          </div>
+        </div>
+        <div className="playlist-items">
+          {LESSONS.map(l=>(
+            <div key={l.id} className={`playlist-item ${l.active?'active':''} ${l.done?'completed':''}`} onClick={()=>setActiveLesson(l.id)}>
+              <div className="pnum">{l.done?<span className="pcheck">✓</span>:l.active?<span style={{color:'var(--primary)'}}>▶</span>:l.id}</div>
+              <div className="pinfo">
+                <div className="ptitle">{l.title}</div>
+                <div className="pdur">
+                  <span className={`ptype ${l.type}`}>{l.type==='video'?'📹 Video':l.type==='quiz'?'📝 Quiz':'📖 Article'}</span>
+                  <span>{l.dur}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <style>{`@keyframes pulse{0%,100%{transform:scaleY(0.6)}50%{transform:scaleY(1)}}`}</style>
+    </div>
+  );
+}
+
+// ──── PROFILE ────
+function Profile({ user }) {
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ name: user.name, email: user.email, bio: 'B.Tech CSE student. Full stack developer & problem solver.', phone: '+91 98765 43210' });
+  return (
+    <div className="page">
+      <div className="profile-grid">
+        <div>
+          <div className="profile-card">
+            <div className="profile-avatar-big">{user.name[0]}</div>
+            <div className="profile-name">{form.name}</div>
+            <div className="profile-email">{form.email}</div>
+            <div className="profile-badge">⭐ Pro Student</div>
+            <div className="profile-stats">
+              <div className="profile-stat"><div className="profile-stat-val">3</div><div className="profile-stat-lab">Courses</div></div>
+              <div className="profile-stat"><div className="profile-stat-val">47</div><div className="profile-stat-lab">Lessons</div></div>
+              <div className="profile-stat"><div className="profile-stat-val">28h</div><div className="profile-stat-lab">Learned</div></div>
+              <div className="profile-stat"><div className="profile-stat-val">12🔥</div><div className="profile-stat-lab">Streak</div></div>
+            </div>
+          </div>
+          <div className="profile-section" style={{marginTop:'1.2rem'}}>
+            <div className="profile-section-title">Certificates Earned</div>
+            {[{e:'🏆',n:'UI/UX Design Mastery',d:'Apr 2025'},{e:'🎯',n:'HTML & CSS Foundations',d:'Feb 2025'}].map(c=>(
+              <div key={c.n} className="cert-card">
+                <div className="cert-icon">{c.e}</div>
+                <div><div className="cert-name">{c.n}</div><div className="cert-date">Completed {c.d}</div></div>
+                <button className="btn btn-ghost btn-sm cert-dl">📥</button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="profile-section">
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div className="profile-section-title" style={{borderBottom:'none',marginBottom:0,paddingBottom:0}}>Account Details</div>
+              <button className="btn btn-ghost btn-sm" onClick={()=>setEditing(!editing)}>{editing?'Cancel':'✏️ Edit'}</button>
+            </div>
+            <div style={{borderBottom:'1px solid var(--border)',marginBottom:'1.2rem',marginTop:'0.8rem'}}/>
+            {editing ? (
+              <div className="edit-form">
+                {[['Full Name','name'],['Email','email'],['Phone','phone'],['Bio','bio']].map(([l,k])=>(
+                  <div key={k} className="form-group" style={{gridColumn:k==='bio'?'1/-1':''}}>
+                    <label className="form-label">{l}</label>
+                    <input className="form-input" value={form[k]} onChange={e=>setForm({...form,[k]:e.target.value})} style={k==='bio'?{resize:'vertical'}:{}}/>
+                  </div>
+                ))}
+                <div style={{gridColumn:'1/-1',display:'flex',gap:'0.75rem'}}>
+                  <button className="btn btn-primary btn-sm" onClick={()=>setEditing(false)}>Save Changes</button>
+                  <button className="btn btn-ghost btn-sm" onClick={()=>setEditing(false)}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
+                {[['Full Name',form.name],['Email',form.email],['Phone',form.phone],['Bio',form.bio]].map(([l,v])=>(
+                  <div key={l} style={{gridColumn:l==='Bio'?'1/-1':''}}>
+                    <div style={{fontSize:'0.72rem',fontWeight:600,color:'var(--ink3)',marginBottom:4,letterSpacing:'0.04em'}}>{l}</div>
+                    <div style={{fontSize:'0.9rem',color:'var(--ink)'}}>{v}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="profile-section">
+            <div className="profile-section-title">Recent Activity</div>
+            {[
+              {t:'Completed lesson: Context API',time:'2 hours ago'},
+              {t:'Earned: UI/UX Certificate',time:'3 days ago'},
+              {t:'Enrolled in React Native course',time:'1 week ago'},
+              {t:'Completed quiz: React Basics',time:'1 week ago'},
+            ].map((a,i)=>(
+              <div key={i} className="activity-row">
+                <div className="activity-dot" style={{background:i===1?'var(--secondary)':i===2?'var(--blue)':'var(--primary)'}}/>
+                <div><div className="activity-text">{a.t}</div><div className="activity-time">{a.time}</div></div>
+              </div>
+            ))}
+          </div>
+          <div className="profile-section">
+            <div className="profile-section-title">Learning Preferences</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem'}}>
+              {[['Daily Goal','30 minutes'],['Preferred Level','Beginner → Intermediate'],['Notifications','Email + Push'],['Language','English']].map(([k,v])=>(
+                <div key={k} style={{background:'var(--bg)',borderRadius:'var(--radius-sm)',padding:'0.85rem'}}>
+                  <div style={{fontSize:'0.72rem',color:'var(--ink3)',marginBottom:3}}>{k}</div>
+                  <div style={{fontSize:'0.88rem',fontWeight:600,color:'var(--ink)'}}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ──── APP ROOT ────
+function App() {
+  const [user, setUser] = useState(null);
+  const [page, setPage] = useState('dashboard');
+
+  if (!user) return <AuthPage onLogin={u=>setUser(u)}/>;
+
+  const pages = {
+    dashboard: <Dashboard user={user} setPage={setPage}/>,
+    courses: <Courses setPage={setPage}/>,
+    'my-learning': <MyLearning setPage={setPage}/>,
+    video: <VideoPlayer/>,
+    profile: <Profile user={user}/>,
+  };
+
+  return (
+    <div className="app">
+      <div className="main-layout">
+        <Sidebar user={user} page={page} setPage={setPage} onLogout={()=>setUser(null)}/>
+        <div className="content-area">
+          <TopNav user={user} page={page}/>
+          {pages[page] || pages.dashboard}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
